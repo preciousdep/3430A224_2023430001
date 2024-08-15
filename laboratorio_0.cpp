@@ -28,11 +28,13 @@ int cuenta_string()
 {
     std::string texto;
     int contador = 0;
+    std::cout << "Ingrese un texto para contar su largo\n";
+    std::cin.ignore();
     std::getline(std::cin, texto);
     for (auto i=0; i< texto.length(); ++i) {
         contador ++;
     };
-    std::cout << contador;
+    std::cout << "En el texto ingresado hay " << contador << " caracteres (incluye espacios)\n";
 }
 
 int main()
