@@ -18,9 +18,9 @@ struct Patient {
 void printInfo(const Patient* head) {
     const Patient* current = head;
     while (current != nullptr) {
-        cout << "\n" << current->name << "\nAge: " << current->age 
+        cout << current->name << "\nAge: " << current->age 
         << "\nWeight: " << current->weight << "\nHeight: "
-        << current->height;
+        << current->height << "\n";
         current = current->next;
     }
 };
@@ -67,7 +67,12 @@ int main() {
     // printing info
     printInfo(head);
 
+    cout << "Insert patient name to delete from list: ";
+    string name_search;
+    cin >> name_search;
+    removePatient(head,name_search);
 
+    printInfo(head);
 
     // memory
     while (head != nullptr){
