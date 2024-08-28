@@ -28,6 +28,7 @@ int main() {
     
     // create defined size array with existing structs
     Patient patient_array[3] = {pepe, lisa, live};
+    // print each item from the array
     print_info(patient_array[0]);
     print_info(patient_array[1]);
     print_info(patient_array[2]);
