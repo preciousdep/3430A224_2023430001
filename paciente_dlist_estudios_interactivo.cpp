@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 // struct for patient with name and age
@@ -22,6 +24,7 @@ void printInfo(const Patient* head) {
         cout << current->name << "\nAge: " << current->age 
         << "\nWeight: " << current->weight << "\nHeight: "
         << current->height << "\nBMI: " << current->bmi << "\n";
+        cout << "\n. . . . . . . . . . . . . . . . . .\n";
         current = current->next;
     }
 };
@@ -117,6 +120,38 @@ double averageWeight(Patient*& head){
     return average_weight;
 };
 
+// imports data from a default file
+int importCsv(Patient*& head){
+    // keep file in same directory
+    string filePath = "random_people.csv";
+    ifstream allData;
+    string line = "";
+    allData.open(filePath);
+    getline(allData,line);
+    if (allData.is_open()) {
+        while (getline(allData, line)) {
+            string name;
+            string age, weight, height;
+            stringstream ss(line);
+            
+            // importing in variables and sending them to
+            // addPatient
+            if (getline(ss, name, ',') &&
+                getline(ss, age, ',') &&
+                getline(ss, weight, ',') &&
+                getline(ss, height, ',')) {
+                // Process the person struct
+                addPatient(head,name,stoi(age),stoi(weight),stoi(height));
+            }
+            calculateBMI(head);
+        }
+        allData.close();
+    } else {
+        std::cerr << "Failed to open the file." << std::endl;
+    }
+    cout << "Imported file successfully!\n";
+};
+
 int main() {
     Patient* head = nullptr;
     // add to list
@@ -124,23 +159,25 @@ int main() {
     addPatient(head,"Lisa", 24, 62, 150);
     addPatient(head,"Live", 30, 65, 180);
     calculateBMI(head);
-    
+
     int choice = 0;
     // menu
-    while (choice != 7){
+    while (choice != 8){
         cout << "Menu for list study. . . \n" <<
         "Enter number to choose an option\n" <<
         "1. Show list\n" << "2. Add Patient\n" <<
         "3. Remove Patient\n" << "4. Show Average Age\n"
         << "5. Show Average Weight\n" << "6. Show Average BMI\n"
-        << "7. Exit\n";
+        << "7. Import data\n" << "8. Exit\n";
 
         cout << "Choice: \n";
         cin >> choice;
 
         // validating choice value
         // non-numeric breaks the code
-        while (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5 && choice != 6 && choice != 7) {
+        while (choice != 1 && choice != 2 && choice != 3
+        && choice != 4 && choice != 5 && choice != 6
+        && choice != 7 && choice != 8) {
             cout << "Enter the desired option: \n";
             cin >> choice;
         }
@@ -176,8 +213,12 @@ int main() {
             double average_bmi = calculateBMI(head);
             cout << "Average BMI in list: " << average_bmi << "\n";
         } else if (choice == 7) {
+            importCsv(head);
+        } else if (choice==8){
             break;
         };
+        
+        cout << "\n. . . . . . . . . . . . . . . . . .\n";
 
     };
 
