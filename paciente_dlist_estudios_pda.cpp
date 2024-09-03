@@ -253,6 +253,51 @@ int makeQueue(Patient*& head){
 
 };
 
+void searchBy(Patient*& head){
+    Patient* current = head;
+    Patient* previous = nullptr;
+    cout << "Enter the search criteria... \n";
+    cout << "1. By BMI\n2. By A1C\n";
+    int choice;
+    cin >> choice;
+    double search = 0;
+
+    if (choice == 1){
+        cout << "Enter the BMI you're searching...\n";
+        cin >> search;
+        // search by bmi
+        // moves the pointer if the name isn't the one in the search
+        while(current != nullptr){
+            if (current -> bmi == search) {
+                cout << "Patient found with BMI value of: "
+                << search << "\n Name: " << current -> name
+                << "\nAge: " << current-> age << "\n";
+            } 
+            previous = current;
+            current = current-> next;
+        };
+
+    } else if (choice == 2){
+        // search by a1c
+        cout << "Enter the A1C you're searching...\n";
+        cin >> search;
+
+        // moves the pointer if the name isn't the one in the search
+        while(current != nullptr){
+            if (current -> aic == search) {
+                cout << "Patient found with A1C value of: "
+                << search << "\n Name: " << current -> name
+                << "\nAge: " << current-> age << "\n";
+            } 
+            previous = current;
+            current = current-> next;
+        };
+    } else if (choice != 0 && choice != 1 && choice != 2) {
+        cout << "Try again\n";
+        searchBy(head);
+    };
+}
+
 int main() {
     Patient* head = nullptr;
     // add to list
@@ -261,7 +306,7 @@ int main() {
     addPatient(head,"Live", 30, 65, 180,4.1);
     calculateBMI(head);
 
-    int choice = 0;
+    int choice = 1;
     // menu
     while (choice != 0){
         cout << "Menu for list study. . . \n" <<
@@ -270,7 +315,7 @@ int main() {
         "3. Remove Patient\n" << "4. Show Average Age\n"
         << "5. Show Average Weight\n" << "6. Show Average BMI\n"
         << "7. Import data\n" << "8. Calculate Priority and make queue\n" 
-        << "9. Exit\n";
+        << "9. Search patients by BMI or A1C\n"<<"0. Exit\n";
 
         cout << "Choice: \n";
         cin >> choice;
@@ -322,6 +367,8 @@ int main() {
         } else if (choice==8){
             calcPriority(head);
             makeQueue(head);
+        } else if (choice == 9){
+            searchBy(head);
         } else if (choice == 0){
             break;
         };
