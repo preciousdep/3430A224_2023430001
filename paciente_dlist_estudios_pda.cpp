@@ -83,7 +83,8 @@ double calculateBMI(Patient*& head){
         // multiplied by 10000 because height is used in
         // cm instead of meters
         double bmi_temp = current->weight*10000 / (pow(current->height, 2));
-        current->bmi = bmi_temp;
+        // rounding it up to 1 decimal
+        current->bmi = round(bmi_temp*10.0)/10.0;
         bmi_total += bmi_temp;
         total_people += 1;
         current = current -> next;
@@ -190,7 +191,9 @@ int calcPriority(Patient*& head){
     }
 };
 
-int makeQueue(Patient*& head){
+// trying to return a queue to use it outside
+// of this function
+queue<Patient*> makeQueue(Patient*& head){
     Patient* current = head;
     int total_length = 0;
 
@@ -206,6 +209,9 @@ int makeQueue(Patient*& head){
     // highest priority to the queue. the highest gets deleted
     // so that it keeps decreasing until there are no patients}
     // with high priority in the array
+
+    // if the queue is a fixed size, then it would go
+    // for (int i = 0; i < fixed_queue_size; i++)
     for (int i = 0; i < total_length; i++) {
         current = head;
         Patient* prev = nullptr;
@@ -224,7 +230,8 @@ int makeQueue(Patient*& head){
         };
 
         // add current patient to the queue
-        if (maxPatient != nullptr) {
+        // and exits if the patient has priority = 0
+        if (maxPatient != nullptr && maxPatient -> priority != 0) {
             if (prevMaxPatient != nullptr) {
                 prevMaxPatient->next = maxPatient->next;
             } else {
@@ -234,8 +241,15 @@ int makeQueue(Patient*& head){
             maxPatient->next = nullptr;
             orderedQueue.push(maxPatient);
         };
+
+        
     };
 
+    return orderedQueue;
+};
+
+// receives the queue to print it
+void printQueue(queue<Patient*> orderedQueue){
     //print queue while iterating. it's done in a temporal
     // queue to delete one (pop) by one after it's printed
     queue<Patient*> tempQueue;
@@ -250,8 +264,7 @@ int makeQueue(Patient*& head){
                   tempQueue.pop();
                   index++;
     }; 
-
-};
+}
 
 void searchBy(Patient*& head){
     Patient* current = head;
@@ -260,15 +273,18 @@ void searchBy(Patient*& head){
     cout << "1. By BMI\n2. By A1C\n";
     int choice;
     cin >> choice;
-    double search = 0;
+    double search = 0.0;
 
     if (choice == 1){
-        cout << "Enter the BMI you're searching...\n";
+        cout << "Enter the BMI you're searching...\n" <<
+        "(With a specificity of 0.1)\n";
         cin >> search;
         // search by bmi
-        // moves the pointer if the name isn't the one in the search
+        // moves the pointer to the next
+        // if the number isn't the one in the search
+
         while(current != nullptr){
-            if (current -> bmi == search) {
+            if (current->bmi == search) {
                 cout << "Patient found with BMI value of: "
                 << search << "\n Name: " << current -> name
                 << "\nAge: " << current-> age << "\n";
@@ -293,13 +309,14 @@ void searchBy(Patient*& head){
             current = current-> next;
         };
     } else if (choice != 0 && choice != 1 && choice != 2) {
-        cout << "Try again\n";
+        cout << "Option not found\n";
         searchBy(head);
     };
 }
 
 int main() {
     Patient* head = nullptr;
+    queue<Patient*> globalQueue;
     // add to list
     addPatient(head,"Pepe", 20, 70, 170,3.2);
     addPatient(head,"Lisa", 24, 62, 150,5.0);
@@ -314,7 +331,7 @@ int main() {
         "1. Show list\n" << "2. Add Patient\n" <<
         "3. Remove Patient\n" << "4. Show Average Age\n"
         << "5. Show Average Weight\n" << "6. Show Average BMI\n"
-        << "7. Import data\n" << "8. Calculate Priority and make queue\n" 
+        << "7. Import data\n" << "8. Make and show patients' queue\n" 
         << "9. Search patients by BMI or A1C\n"<<"0. Exit\n";
 
         cout << "Choice: \n";
@@ -366,7 +383,15 @@ int main() {
             importCsv(head);
         } else if (choice==8){
             calcPriority(head);
-            makeQueue(head);
+                // only adds to the queue if it's empty
+                // considering the list to use is a single
+                // one. if this was more static, patients
+                // would be deleted from the queue and when
+                // it was empty, make another one
+            if (globalQueue.empty()){
+                globalQueue= makeQueue(head);
+            }
+            printQueue(globalQueue);
         } else if (choice == 9){
             searchBy(head);
         } else if (choice == 0){
