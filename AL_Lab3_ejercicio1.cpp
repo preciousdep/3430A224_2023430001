@@ -54,7 +54,7 @@ bool push(Stack*& head, int& counter, int max, int dato){
 }
 
 //elimina el ultimo dato
-bool pop(Stack*& head, int counter) {
+bool pop(Stack*& head, int& counter) {
     if (emptyStack(head,counter)) {
         return true;
     } else {
