@@ -43,6 +43,8 @@ bool push(Stack*& head, int& counter, int max, int dato){
     if (fullStack(head,max,counter)) {
         return false;
     } else {
+        // crea el new Stack, le agrega el atributo,
+        // lo agrega al stack y suma al counter
         Stack* newStack = new Stack();
         newStack -> data = dato;
         counter += 1;
@@ -58,6 +60,9 @@ bool pop(Stack*& head, int& counter) {
     if (emptyStack(head,counter)) {
         return true;
     } else {
+        // consigue el top (que es el ultimo dato)
+        // y le introduce el next para que quede
+        // eliminado el ultimo dato
         Stack* top = head;
         head = head->next;
         counter = counter - 1;
@@ -77,7 +82,8 @@ void printStack(Stack* head){
 int main() {
     Stack* head = nullptr;
     int max; // definir numero maximo de la pila, por ejemplo 5
-    max = 5;
+    cout << "Ingrese tamaño máximo de pila\n";
+    cin >> max;
     int counter = 0;
 
     // menu
