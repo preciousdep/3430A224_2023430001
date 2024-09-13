@@ -1,12 +1,3 @@
-// README
-/* para poder eliminar un dato de una pila que no esta
-al final de la misma hay que mover todos los datos anteriores
-con el elemento [3] del menu, verificando que efectivamente
-se consigue el elemento por eliminar al extremo final de alguna
-pila. de ahi solo hay que utilizar la opcion [2]
-los contenedores deben ingresarse de forma manual, al igual
-que el tamaño y cantidad de pilas */
-
 #include <iostream>
 #include <string>
 
