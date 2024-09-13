@@ -19,7 +19,7 @@ struct Stack{
     Stack* next;
 };
 
-//revisa si la pila esta vacia con el
+// revisa si la pila esta vacia con el
 // contador de counter y comparando si es == 0
 bool emptyStack(Stack*& head, int& counter){
     bool result;
@@ -90,19 +90,19 @@ int main() {
     cout << "LEER README AL INICIO DEL CODIGO ANTES DE USAR\n";
     int maxPuerto;
     cout << "Ingrese cantidad de pilas que habra en" <<
-    " el puerto seco: ";
+    " el puerto seco: (max 40) ";
     cin >> maxPuerto;
     
     int maxPila;
-    cout << "\nIngrese tamano maximo de las pilas: ";
+    cout << "\nIngrese tamano maximo de las pilas: (max 40) ";
     cin >> maxPila;
     cout << "\n";
 
     // definiendo un numero grande, ya que
     // de igual forma el tamaño del arreglo
     // esta definido por m
-    Stack* puertoSeco[90] = {nullptr};
-    int counterList[90];
+    Stack* puertoSeco[40] = {nullptr};
+    int counterList[40];
     for (int i = 0; i < maxPuerto ; ++i){
         puertoSeco[i] = new Stack();
         counterList[i] = 0;
@@ -135,7 +135,8 @@ int main() {
 
             // agregar datos en una pila
         } else if (menuChoice == 2){
-            // eliminar el ultimo dato de la pila
+            // eliminar el ultimo dato de la pila con eliminacion
+            // del puntero
             cout << "Escoja pila para borrar su ultimo elemento\n";
             int popChoice;
             cin >> popChoice;
@@ -147,20 +148,29 @@ int main() {
 
         } else if (menuChoice == 3){
             cout << "Escoja pila de la cual va a mover el elemento\n";
+
+            // se recibe el numero de la pila de la cual se va a mover el elemento, el "origen"
+            // si se escoge 1, se sabe que el indice de la pila dentro del arreglo es 1-1= 0
             int originStack;
             cin >> originStack;
-
+            // mismo caso, es la pila en la que va a hacerse funcion de push
+            // con los datos del elemento que se desea. la modificacion se basa en
+            // agregar un nuevo contenedor con la misma info (que en este caso es el string)
             cout << "Escoja pila a la cual lo va a mover\n";
             int endStack;
             cin >> endStack;
+            // se guarda la informacion del string para crear uno nuevo
             string tempData = puertoSeco[originStack-1]-> data;
 
+            // se elimina el dato de la pila de origen
             if (!pop(puertoSeco[originStack-1], counterList[originStack-1])){
                 cout << "Dato eliminado con exito\n";
             } else {
                 cout << "Pila vacia, no se ha eliminado ningun dato\n";
             }; 
 
+            // se agrega el dato 'nuevo' a la nueva pila con el
+            // push, utilizando tempData como la informacion del struct
             if (push(puertoSeco[endStack - 1], maxPila, tempData, counterList[endStack-1])) {
                 cout << "Dato agregado\n";
             } else {
