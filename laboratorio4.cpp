@@ -8,7 +8,8 @@ struct Node {
     Node* right;
 };
 
-// Crear un nuevo nodo
+
+// crear un nodo en base a una informacion
 Node* createNode(const int& data) {
     Node* newNode = new Node;
     newNode->info = data;
@@ -17,112 +18,24 @@ Node* createNode(const int& data) {
     return newNode;
 }
 
-Node* insertNode(Node*& root, int info){
-    if (root == NULL){
-        root = createNode(info);
-    } else if (info == root-> info){
-        cout << "El dato ya existe en el arbol\n";
-    } else if (info <= root->info) {
-        root->left = insertNode(root->left, info);
-    } else {
-        root->right = insertNode(root->right,info);
-    }
-    return root;
-}
-
-Node* deleteNode(Node*& root, int search){
-    if (root==NULL){
-        return root;
-    }
-    if (search < root -> info) {
-        root -> left = deleteNode(root->left,search);
-    } else if (search > root -> info) {
-        root -> right = deleteNode(root->right,search);
-    } else {
-        if (root->left == NULL) {
-            Node* temp = root -> right;
-            delete root;
-            return temp;
-        } else if (root->right==NULL){
-            Node* temp = root -> left;
-            delete root;
-            return temp;
-        }
-
-        Node* temp = root -> right;
-        while (temp->left != NULL) {
-            temp = temp-> left;
-        }
-
-        root -> info = temp -> info;
-        root -> right = deleteNode(root->right, temp->info);
-    }
-    return root;
-
-}
-
-bool modifyNode(Node*& root, int info){
-    if (root==NULL) {
-        return false;
-    } else if (root-> info == info){
-        // modify here
-        cout << "Ingrese nueva informacion para el nodo (ENTERO)\n";
-        int newNode;
-        cin >> newNode;
-        root-> info = newNode;
-        return true;
-    } else if (info <= root -> info){
-        return modifyNode(root->left, info);
-    } else {
-        return modifyNode(root->right, info);
-    }
-}
-
-void preOrderPrint(Node* root){
-    if (root==nullptr){
-        return;
-    }
-    cout << root-> info << " | ";
-    preOrderPrint(root->left);
-    preOrderPrint(root->right);
-}
-
-void inOrderPrint(Node* root){
-    if (root==nullptr){
-        return;
-    }
-    inOrderPrint(root->left);
-    cout << root-> info << " | ";
-    inOrderPrint(root->right);
-}
-
-void postOrderPrint(Node* root){
-    if (root==nullptr){
-        return;
-    }
-    postOrderPrint(root->left);
-    postOrderPrint(root->right);
-    cout << root-> info << " | ";
-}
-
 class Arbol {
 private:
-    Node* root;
+    Node*& root;
 
 public:
     // Constructor de la clase Arbol
-    Arbol(Node* node) : root(node) {}
+    Arbol(Node*& node) : root(node) {}
 
     // escribe en el archivo
-    void generateGraphic(Node* node, ofstream& fp) {
-        if (node != NULL){
-            if (node->left != NULL){
-                fp << node->info << " -> " << node->left->info << ";" << endl;
-                generateGraphic(node->left,fp);
+    void generateGraphic(Node* root, ofstream& fp) {
+        if (root != NULL){
+            if (root->left != NULL){
+                fp << root->info << " -> " << root->left->info << ";" << endl;
+                generateGraphic(root->left,fp);
             }
-            if (node->right!=NULL){
-                fp << node->info << " -> " << node->right->info << ";" << endl;
-                generateGraphic(node->right,fp);
+            if (root->right!=NULL){
+                fp << root->info << " -> " << root->right->info << ";" << endl;
+                generateGraphic(root->right,fp);
             }
         }
     }
@@ -147,13 +60,110 @@ public:
 
         // Generar y mostrar la imagen del arbol
         system("dot -Tpng -o arbol.png arbol.txt");
-
         cout << "Imagen generada con exito\n";
+    }
+
+
+    // insertar un nuevo nodo considerando
+    // mayor o menor al root
+    Node* insertNode(Node*& root, int info){
+        if (root == NULL){
+            root = createNode(info);
+        } else if (info == root-> info){
+            cout << "El dato ya existe en el arbol\n";
+        } else if (info <= root->info) {
+            root->left = insertNode(root->left, info);
+        } else {
+            root->right = insertNode(root->right,info);
+        }
+        return root;
+    }
+
+    // elimina el nodo que se busca con la informacion
+    // que contiene
+    Node* deleteNode(Node*& root, int search){
+        if (root==NULL){
+            return root;
+        }
+        if (search < root -> info) {
+            root -> left = deleteNode(root->left,search);
+        } else if (search > root -> info) {
+            root -> right = deleteNode(root->right,search);
+        } else {
+            if (root->left == NULL) {
+                Node* temp = root -> right;
+                delete root;
+                return temp;
+            } else if (root->right==NULL){
+                Node* temp = root -> left;
+                delete root;
+                return temp;
+            }
+
+            Node* temp = root -> right;
+            while (temp->left != NULL) {
+                temp = temp-> left;
+            }
+
+            root -> info = temp -> info;
+            root -> right = deleteNode(root->right, temp->info);
+        }
+        return root;
+
+    }
+    
+    // se busca el nodo y se modifica su informacion
+    bool modifyNode(Node*& root, int info){
+        if (root==NULL) {
+            return false;
+        } else if (root-> info == info){
+            // modify here
+            cout << "Ingrese nueva informacion para el nodo (ENTERO)\n";
+            int newNode;
+            cin >> newNode;
+            root-> info = newNode;
+            return true;
+        } else if (info <= root -> info){
+            return modifyNode(root->left, info);
+        } else {
+            return modifyNode(root->right, info);
+        }
+    }
+
+//root izq derecha print
+    void preOrderPrint(Node* root){
+        if (root==nullptr){
+            return;
+        }
+        cout << root-> info << " | ";
+        preOrderPrint(root->left);
+        preOrderPrint(root->right);
+    }
+
+// izq root derecha
+    void inOrderPrint(Node* root){
+        if (root==nullptr){
+            return;
+        }
+        inOrderPrint(root->left);
+        cout << root-> info << " | ";
+        inOrderPrint(root->right);
+    }
+
+// izq derecha root
+    void postOrderPrint(Node* root){
+        if (root==nullptr){
+            return;
+        }
+        postOrderPrint(root->left);
+        postOrderPrint(root->right);
+        cout << root-> info << " | ";
     }
 };
 
 int main() {
     Node *root = NULL;
+    Arbol arbol(root);
 
     int menuChoice = -1;
     while (menuChoice != 0){
@@ -170,7 +180,7 @@ int main() {
             int addNode;
             if (cin >> addNode){
                 cout << "Agregando nodo. . .\n";
-                insertNode(root,addNode);
+                arbol.insertNode(root,addNode);
             } else if (cin.bad()){
                 cout << "Dato invalido. Debe ser entero\n";
             } // ARREGLAR ESTO AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -182,14 +192,13 @@ int main() {
             cin >> printChoice;
             // arreglar loop infinito cuando se muestra tras vaciar arbol
             if (printChoice == 1){
-                preOrderPrint(root);
+                arbol.preOrderPrint(root);
             } else if (printChoice == 2){
-                inOrderPrint(root);
+                arbol.inOrderPrint(root);
             } else if (printChoice == 3){
-                postOrderPrint(root);
+                arbol.postOrderPrint(root);
             } else if (printChoice==4){
                 // generar imagen
-                Arbol arbol(root);
                 arbol.visualize();
             } else {
                  cout << "Opcion invalida\n";
@@ -200,7 +209,7 @@ int main() {
             cout << "Ingrese el valor del nodo que quiere eliminar\n";
             int search;
             cin >> search;
-            if (deleteNode(root,search) != NULL){
+            if (arbol.deleteNode(root,search) != NULL){
                 cout << "No se ha eliminado nada, no se encontro\n";
             } else {
                 cout << "Eliminado con exito\n";
@@ -209,7 +218,7 @@ int main() {
             cout << "Ingrese el valor del nodo que quiere modificar\n";
             int search;
             cin >> search;
-            if (modifyNode(root,search) == true) {
+            if (arbol.modifyNode(root,search) == true) {
                 cout <<"Se encontro y se modifico con exito \n";
             } else {
                 cout << "No se encontro\n";
