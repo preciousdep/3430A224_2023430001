@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <string>
 using namespace std;
 
 struct Node {
@@ -23,24 +24,36 @@ private:
     Node*& root;
 
 public:
-    // Constructor de la clase Arbol
+    // se asigna el root(node) a la clase arbol para
+    // construirla
     Arbol(Node*& node) : root(node) {}
 
     // escribe en el archivo
-    void generateGraphic(Node* root, ofstream& fp) {
-        if (root != NULL){
-            if (root->left != NULL){
+    void recorrer(Node* root, ofstream& fp) {
+        if (root != nullptr){
+            if (root->left != nullptr){
                 fp << root->info << " -> " << root->left->info << ";" << endl;
-                generateGraphic(root->left,fp);
+            } else {
+                // se usa el \" para agregar comillas dobles al numero,
+                // si no estuvieran presentes existen problemas de
+                // ambiguedad con el entero
+                string cadena = "\"" + to_string(root->info) + "i\"";
+                fp << cadena << "[shape=point];" << endl;
+                fp << root->info << " -> " << cadena << ";" << endl;
             }
-            if (root->right!=NULL){
+            if (root->right!=nullptr){
                 fp << root->info << " -> " << root->right->info << ";" << endl;
-                generateGraphic(root->right,fp);
+            } else {
+                string cadena = "\"" + to_string(root->info) + "d\"";
+                fp << cadena << "[shape=point];" << endl;
+                fp << root->info << " -> " << cadena << ";" << endl;
             }
+            recorrer(root->left,fp);
+            recorrer(root->right,fp);
         }
     }
 
-    // Generar y mostrar la visualizacion del arbol
+    // genera el grafico con el archivo de texto y agrega su encabezado/final
     void visualize() {
         ofstream fp("arbol.txt");
 
@@ -52,15 +65,17 @@ public:
         fp << "digraph G {" << endl;
         fp << "node [style=filled fillcolor=yellow];" << endl;
 
-        generateGraphic(root, fp);
+        recorrer(root, fp);
 
         fp << "}" << endl;
         
         fp.close();
 
-        // Generar y mostrar la imagen del arbol
+        // aqui se genera la imagen, luego se abre el archivo
         system("dot -Tpng -o arbol.png arbol.txt");
         cout << "Imagen generada con exito\n";
+        // utiliza este comando en windows para poder abrir
+        // la imagen generada
         system("start arbol.png");
     }
 
@@ -68,10 +83,14 @@ public:
     // insertar un nuevo nodo considerando
     // mayor o menor al root, usando recursividad
     // hasta encontrar su lugar adecuado
+    // en caso de que el usuario quiera agregar
+    // datos de forma manual (igualmente ya hay datos
+    //previamente agregados en el main)
     Node* insertNode(Node*& root, int info){
         if (root == NULL){
             root = createNode(info);
         } else if (info == root-> info){
+            // en caso de que ya existiera, se omite
             cout << "El dato ya existe en el arbol\n";
         } else if (info <= root->info) {
             root->left = insertNode(root->left, info);
@@ -91,7 +110,7 @@ public:
             root -> left = deleteNode(root->left,search);
         } else if (search > root -> info) {
             root -> right = deleteNode(root->right,search);
-        } else {
+        } else { // intercambio con un temp para poder eliminar
             if (root->left == NULL) {
                 Node* temp = root -> right;
                 delete root;
@@ -101,12 +120,10 @@ public:
                 delete root;
                 return temp;
             }
-
             Node* temp = root -> right;
             while (temp->left != NULL) {
                 temp = temp-> left;
             }
-
             root -> info = temp -> info;
             root -> right = deleteNode(root->right, temp->info);
         }
@@ -116,6 +133,7 @@ public:
     
     // se busca el nodo con recursividad y
     // se modifica su informacion contenida
+    // con input del usuario
     bool modifyNode(Node*& root, int info){
         if (root==NULL) {
             return false;
@@ -190,24 +208,25 @@ int main() {
         << "Salir [0]\n";
         cout << "-------------------\n";
         cin >> menuChoice;
-    
+
+        // utilizacion de menu que habia usado
+        // en guias anteriores para un aspecto
+        // mas interactivo
         if (menuChoice == 1){
-            // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa
+            // lo dejo por si se desea agregar datos
+            // desde la terminal, igualmente ya se tienen datos ya
+            // predeterminados
             cout << "Ingrese numero a agregar\n";
             int addNode;
-            if (cin >> addNode){
-                cout << "Agregando nodo. . .\n";
-                arbol.insertNode(root,addNode);
-            } else if (cin.bad()){
-                cout << "Dato invalido. Debe ser entero\n";
-            } // ARREGLAR ESTO AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+            cin >> addNode;
+            cout << "Agregando nodo. . .\n";
+            arbol.insertNode(root,addNode);
         } else if (menuChoice == 2){
             cout << "Mostrar en Pre Orden [1]\n" <<
             "Mostrar en In Orden [2]\n" << "Mostrar en Post Orden [3]\n" <<
             "Generar imagen del arbol [4]\n";
             int printChoice;
             cin >> printChoice;
-            // arreglar loop infinito cuando se muestra tras vaciar arbol
             if (printChoice == 1){
                 arbol.preOrderPrint(root);
             } else if (printChoice == 2){
