@@ -203,7 +203,7 @@ int main() {
     while (menuChoice != 0){
         cout << "A R B O L\n";
         cout << "Escoja lo que quiere hacer:" << "\n" <<
-        "Agregar al arbol [1]\n" << "Mostrar arbol[2]\n" <<
+        "Observar grafico de arbol [1]\n" << "Mostrar arbol [2]\n" <<
         "Eliminar un nodo [3]\n" << "Modificar un nodo [4]\n"
         << "Salir [0]\n";
         cout << "-------------------\n";
@@ -212,15 +212,9 @@ int main() {
         // utilizacion de menu que habia usado
         // en guias anteriores para un aspecto
         // mas interactivo
+
         if (menuChoice == 1){
-            // lo dejo por si se desea agregar datos
-            // desde la terminal, igualmente ya se tienen datos ya
-            // predeterminados
-            cout << "Ingrese numero a agregar\n";
-            int addNode;
-            cin >> addNode;
-            cout << "Agregando nodo. . .\n";
-            arbol.insertNode(root,addNode);
+            arbol.visualize();
         } else if (menuChoice == 2){
             cout << "Mostrar en Pre Orden [1]\n" <<
             "Mostrar en In Orden [2]\n" << "Mostrar en Post Orden [3]\n" <<
@@ -233,9 +227,6 @@ int main() {
                 arbol.inOrderPrint(root);
             } else if (printChoice == 3){
                 arbol.postOrderPrint(root);
-            } else if (printChoice==4){
-                // generar imagen
-                arbol.visualize();
             } else {
                  cout << "Opcion invalida\n";
             };
@@ -243,22 +234,34 @@ int main() {
 
         } else if (menuChoice == 3){
             cout << "Ingrese el valor del nodo que quiere eliminar\n";
-            int search;
-            cin >> search;
-            if (arbol.deleteNode(root,search) != NULL){
-                cout << "No se ha eliminado nada, no se encontro\n";
-            } else {
-                cout << "Eliminado con exito\n";
+            int search; // validar si el input esta correcto
+            if (cin >> search){
+                if (arbol.deleteNode(root,search) != NULL){
+                    cout << "Eliminado con exito\n";
+                } else {
+                    cout << "No se ha eliminado nada, no se encontro\n";
+                };
+            } else { // caso de ingresar un string, por ejemplo
+                cout << "No es valido. Intente con un numero entero\n";
+                // se tiene que limpiar e ignorar el error, sino
+                // va a un loop infinito
+                std::cin.clear();
+                std::cin.ignore(100, '\n');
             };
         } else if (menuChoice == 4){
             cout << "Ingrese el valor del nodo que quiere modificar\n";
             int search;
-            cin >> search;
-            if (arbol.modifyNode(root,search) == true) {
-                cout <<"Se encontro y se modifico con exito \n";
+            if (cin >> search){
+                if (arbol.modifyNode(root,search) == true) {
+                    cout <<"Se encontro y se modifico con exito \n";
+                } else {
+                    cout << "No se encontro\n";
+                }
             } else {
-                cout << "No se encontro\n";
-            }
+                cout << "No es valido. Intente con un numero entero\n";
+                std::cin.clear();
+                std::cin.ignore(100, '\n');
+            };
         } else {
             break;
         }
