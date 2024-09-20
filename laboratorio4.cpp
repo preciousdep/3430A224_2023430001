@@ -61,11 +61,13 @@ public:
         // Generar y mostrar la imagen del arbol
         system("dot -Tpng -o arbol.png arbol.txt");
         cout << "Imagen generada con exito\n";
+        system("start arbol.png");
     }
 
 
     // insertar un nuevo nodo considerando
-    // mayor o menor al root
+    // mayor o menor al root, usando recursividad
+    // hasta encontrar su lugar adecuado
     Node* insertNode(Node*& root, int info){
         if (root == NULL){
             root = createNode(info);
@@ -112,7 +114,8 @@ public:
 
     }
     
-    // se busca el nodo y se modifica su informacion
+    // se busca el nodo con recursividad y
+    // se modifica su informacion contenida
     bool modifyNode(Node*& root, int info){
         if (root==NULL) {
             return false;
@@ -165,6 +168,19 @@ int main() {
     Node *root = NULL;
     Arbol arbol(root);
 
+    // agregar datos
+    arbol.insertNode(root,120);
+    arbol.insertNode(root,87);
+    arbol.insertNode(root,140);
+    arbol.insertNode(root,43);
+    arbol.insertNode(root,99);
+    arbol.insertNode(root,130);
+    arbol.insertNode(root,22);
+    arbol.insertNode(root,65);
+    arbol.insertNode(root,93);
+    arbol.insertNode(root,135);
+    arbol.insertNode(root,56);
+
     int menuChoice = -1;
     while (menuChoice != 0){
         cout << "A R B O L\n";
@@ -174,8 +190,9 @@ int main() {
         << "Salir [0]\n";
         cout << "-------------------\n";
         cin >> menuChoice;
-
+    
         if (menuChoice == 1){
+            // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa
             cout << "Ingrese numero a agregar\n";
             int addNode;
             if (cin >> addNode){
