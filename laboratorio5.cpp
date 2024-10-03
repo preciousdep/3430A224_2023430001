@@ -25,7 +25,9 @@ void Insertar(Arbol* a, int dat);
 /* Borrar un elemento: */
 void Borrar(Arbol* a, int dat);
 /* Funcion de busqueda: */
-int Buscar(Arbol a, int dat);
+bool Buscar(Arbol a, int dat);
+/* modificar */
+void Modificar(Arbol* a, int dat);
 /* Comprobar si es un nodo hoja: */
 int EsHoja(pNodo r);
 /* Contar numero de nodos: */
@@ -68,10 +70,25 @@ int main() {
                 cin >> valor;
                 Insertar(&ArbolInt, valor);
                 break;
+            case 2:
+                cout << "Ingrese valor a buscar: ";
+                cin >> valor;
+                if (Buscar(ArbolInt, valor)){
+                    cout << "Se encontro valor \n";
+                } else {
+                    cout << "No se encontro valor \n";
+                }
+                break;
             case 3:
                 cout << "Ingrese numero a eliminar: ";
                 cin >> valor;
                 Borrar(&ArbolInt,valor);
+                break;
+            case 4:
+                cout << "Ingrese numero a modificar: ";
+                cin >> valor;
+                Modificar(&ArbolInt,valor);
+                //
                 break;
             case 5:
                 GenerarGrafo(ArbolInt);
@@ -153,7 +170,6 @@ void Insertar(Arbol* a, int dat) {
 void Borrar(Arbol* a, int dat){
     pNodo padre = NULL;
     pNodo actual = *a;
-    bool bo = FALSE;
 
     if (actual != NULL){
         if (dat < actual->dato){
@@ -183,7 +199,6 @@ void Borrar(Arbol* a, int dat){
                 } else {
                     auxiliar1->izquierdo = auxiliar->izquierdo;
                 }
-                //reestructura der con actual->izq y booleano
                 Podar(&auxiliar);
             }
         } 
@@ -192,6 +207,33 @@ void Borrar(Arbol* a, int dat){
         cout << "No se consiguió en el arbol\n";
     }
 }
+
+bool Buscar(Arbol a, int dat){
+    pNodo actual = a;
+    pNodo padre = NULL; 
+    while (actual != NULL && dat != actual->dato) {
+        padre = actual;
+
+        if (dat < actual->dato)
+            actual = actual->izquierdo;
+        else if (dat > actual->dato)
+            actual = actual->derecho;
+    }
+
+    if (actual == NULL){
+        return false;
+    } else {
+        return true;
+    }
+}
+
+void Modificar(Arbol* a, int dat){
+    Borrar(a,dat);
+    cout << "Ingrese numero por el cual reemplazar: ";
+    int nuevoNum;
+    cin >> nuevoNum;
+    Insertar(a,nuevoNum);
+};
 
 void Equilibrar(Arbol* a, pNodo nodo, int rama, int nuevo) {
     int salir = FALSE;
@@ -377,11 +419,11 @@ void PreOrden(Arbol a, std::ofstream &fp) {
     if (a) {
         fp << a->dato << ";\n";
         if (a->izquierdo) {
-            fp << a->dato << "->" << a->izquierdo->dato << ";\n";
+            fp << a->dato << "->" << a->izquierdo->dato << "[label="<< a->izquierdo->FE << "];\n";
             PreOrden(a->izquierdo, fp);
         }
         if (a->derecho) {
-            fp << a->dato << "->" << a->derecho->dato << ";\n";
+            fp << a->dato << "->" << a->derecho->dato << "[label=" << a->derecho->FE << "];\n";
             PreOrden(a->derecho, fp);
         }
     }
