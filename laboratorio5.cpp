@@ -25,17 +25,19 @@ void Insertar(Arbol* a, int dat);
 /* Borrar un elemento: */
 void Borrar(Arbol* a, int dat);
 /* Funcion de busqueda: */
-bool Buscar(Arbol a, int dat);
+pNodo Buscar(Arbol a, int dat);
 /* modificar */
 void Modificar(Arbol* a, int dat);
 /* Comprobar si es un nodo hoja: */
-int EsHoja(pNodo r);
+// cambiado a bool debido a que true: es hoja
+// false: no es hoja
+bool EsHoja(pNodo r);
 /* Contar numero de nodos: */
-int NumeroNodos(Arbol a, int* c);
+int NumeroNodos(Arbol a);
 /* Calcular la altura de un arbol: */
-int AlturaArbol(Arbol a, int* altura);
+int AlturaArbol(Arbol a);
 /* Calcular altura de un dato: */
-int Altura(Arbol a, int dat);
+int Altura(Arbol a, int c);
 /* Generar salida para Graphiz */
 void PreOrden(Arbol, std::ofstream &fp);
 
@@ -56,13 +58,15 @@ void GenerarGrafo(Arbol);
 
 int main() {
     Arbol ArbolInt = NULL;
-    int opcion = 0;
+    int opcion = -1;
     int valor;
+    int altura;
+    int nodos;
 
-    while (opcion != 6) {
+    while (opcion != 0) {
         MenuPrincipal();
-        std::cout << "Ingrese su opcion: ";
-        std::cin >> opcion;
+        cout << "Ingrese su opcion: ";
+        cin >> opcion;
 
         switch (opcion) {
             case 1:
@@ -93,6 +97,25 @@ int main() {
             case 5:
                 GenerarGrafo(ArbolInt);
                 break;
+
+            case 6:
+            altura = AlturaArbol(ArbolInt);
+            cout << "La altura del arbol es de: "<< altura << "\n";
+            nodos = NumeroNodos(ArbolInt); 
+            // usa * porque el valor se modifica
+            cout << "El numero de nodos en el arbol es de: " << nodos << "\n";
+            break;
+            case 7:
+            cout << "Ingrese el nodo del cual quiere saber informacion\n";
+            cin >> valor;
+            altura=Altura(ArbolInt,valor);
+            cout <<altura << "\n";
+            if (EsHoja(Buscar(ArbolInt,valor))){
+                cout << "El nodo introducido es hoja\n";
+            } else {
+                cout << "El nodo introducido no es hoja\n";
+            }
+            break;
         }
     }
 
@@ -119,14 +142,16 @@ void GenerarGrafo(Arbol ArbolInt) {
 }
 
 void MenuPrincipal() {
-    std::cout << "\n";
-    std::cout << "<1> Ingresar numero\n";
-    std::cout << "<2> Busqueda numero\n";
-    std::cout << "<3> Eliminar numero\n";
-    std::cout << "<4> Modificar elemento ingresado\n";
-    std::cout << "<5> Generar Grafo\n";
-    std::cout << "<6> Salir\n";
-    std::cout << "\n";
+    cout << "\n";
+    cout << "<1> Ingresar numero\n";
+    cout << "<2> Busqueda numero\n";
+    cout << "<3> Eliminar numero\n";
+    cout << "<4> Modificar elemento ingresado\n";
+    cout << "<5> Generar Grafo\n";
+    cout << "<6> Informacion del arbol\n";
+    cout << "<7> Informacion de un nodo\n";
+    cout << "<0> Salir\n";
+    cout << "\n";
 }
 
 void Podar(Arbol* a) {
@@ -208,7 +233,7 @@ void Borrar(Arbol* a, int dat){
     }
 }
 
-bool Buscar(Arbol a, int dat){
+pNodo Buscar(Arbol a, int dat){
     pNodo actual = a;
     pNodo padre = NULL; 
     while (actual != NULL && dat != actual->dato) {
@@ -221,9 +246,9 @@ bool Buscar(Arbol a, int dat){
     }
 
     if (actual == NULL){
-        return false;
+        return nullptr;
     } else {
-        return true;
+        return actual;
     }
 }
 
@@ -427,4 +452,62 @@ void PreOrden(Arbol a, std::ofstream &fp) {
             PreOrden(a->derecho, fp);
         }
     }
+}
+
+bool EsHoja(pNodo a){
+    if (a->izquierdo == NULL && a->derecho == NULL){
+        // ambos lados son null, significa que es hoja
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+
+};
+
+int NumeroNodos(Arbol a){
+    /* usando logica de recorrer en pre orden
+    contar los nodos del inicio hasta que sea null*/
+    pNodo root = a;
+        if (root==nullptr){
+            return 0;
+        };
+        return 1 + NumeroNodos(root->izquierdo) + NumeroNodos(root->derecho);
+}
+
+int AlturaArbol(Arbol a){
+    pNodo root = a;
+    if (root == nullptr){
+        return -1;
+        // en ese caso la altura se devuelve -1, ya que no hay nodos
+    }
+    // recursividad para sumar cada lado
+    int alturaIzquierda = AlturaArbol(root->izquierdo);
+    int alturaDerecha = AlturaArbol(root->derecho);
+
+    // compara el mayor para recibir la altura
+    if (alturaIzquierda >= alturaDerecha){
+        return alturaIzquierda + 1;
+    } else {
+        return alturaDerecha +1;
+    }
+}
+
+int Altura(Arbol a, int dat){
+    cout << "Altura del nodo:\n";
+    int altura;
+    pNodo actual = a;
+    pNodo padre = NULL; 
+    while (actual != NULL && dat != actual->dato) {
+        padre = actual;
+
+        if (dat < actual->dato)
+            actual = actual->izquierdo;
+        else if (dat > actual->dato)
+            actual = actual->derecho;
+    }
+    if (actual == NULL){
+        return -1;
+    } else { // dato encontrado
+        altura = AlturaArbol(actual);
+    }    
 }
