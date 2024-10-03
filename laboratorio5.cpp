@@ -23,7 +23,7 @@ typedef Nodo* Arbol;
 /* Insertar en arbol ordenado: */
 void Insertar(Arbol* a, int dat);
 /* Borrar un elemento: */
-void Borrar(Arbol* a, int dat);
+bool Borrar(Arbol* a, int dat);
 /* Funcion de busqueda: */
 pNodo Buscar(Arbol a, int dat);
 /* modificar */
@@ -86,7 +86,9 @@ int main() {
             case 3:
                 cout << "Ingrese numero a eliminar: ";
                 cin >> valor;
-                Borrar(&ArbolInt,valor);
+                if (Borrar(&ArbolInt,valor)){
+                    cout << "Borrado exitoso\n";
+                };
                 break;
             case 4:
                 cout << "Ingrese numero a modificar: ";
@@ -192,29 +194,28 @@ void Insertar(Arbol* a, int dat) {
     }
 }
 
-void Borrar(Arbol* a, int dat){
+bool Borrar(Arbol* a, int dat){
     pNodo padre = NULL;
     pNodo actual = *a;
 
-    if (actual != NULL){
+    if (actual != NULL){ 
         if (dat < actual->dato){
-            Borrar(&(actual->izquierdo), dat);
-
-        } else if (dat > actual->dato) {
+            Borrar(&(actual->izquierdo), dat); // recursivo va hacia izq porque es menor
+        } else if (dat > actual->dato) { // va hacia derecha porque es mayor
             Borrar(&(actual->derecho),dat);
-        } else {
-            pNodo otro = actual;
-            if (otro->derecho == NULL){
+        } else { // se encontro!
+            pNodo otro = actual; // un nodo auxiliar 
+            if (otro->derecho == NULL){ // caso solo hijo izquierdo, este toma lugar del eliminado
                 pNodo temp = actual;
                 *a = actual-> izquierdo;
-            } else if (otro->izquierdo == NULL){
+            } else if (otro->izquierdo == NULL){ // caso solo hijo derecho, lo mismo
                 pNodo temp = actual;
                 *a = actual -> derecho;
-            } else {
+            } else { // caso tiene 2 hijos
                 pNodo auxiliar = actual -> izquierdo;
                 pNodo auxiliar1;
-                while (auxiliar -> derecho != NULL){
-                    auxiliar1 = auxiliar;
+                while (auxiliar -> derecho != NULL){ // mientras hayan derechos
+                    auxiliar1 = auxiliar; 
                     auxiliar = auxiliar->derecho;
                 };
                 actual->dato = auxiliar->dato;
@@ -225,39 +226,43 @@ void Borrar(Arbol* a, int dat){
                     auxiliar1->izquierdo = auxiliar->izquierdo;
                 }
                 Podar(&auxiliar);
+                return TRUE;
             }
         } 
 
     } else {
-        cout << "No se consiguió en el arbol\n";
+        cout << "No se consiguio en el arbol\n";
+        return FALSE;
     }
 }
 
 pNodo Buscar(Arbol a, int dat){
     pNodo actual = a;
     pNodo padre = NULL; 
-    while (actual != NULL && dat != actual->dato) {
+    while (actual != NULL && dat != actual->dato) { // recorrer arbol
         padre = actual;
-
         if (dat < actual->dato)
             actual = actual->izquierdo;
         else if (dat > actual->dato)
             actual = actual->derecho;
-    }
+    } // se consiguio o se acabo el arbol
 
     if (actual == NULL){
-        return nullptr;
+        return nullptr; // caso no se encontro
     } else {
-        return actual;
+        return actual; // caso se encontro
     }
 }
 
 void Modificar(Arbol* a, int dat){
-    Borrar(a,dat);
-    cout << "Ingrese numero por el cual reemplazar: ";
-    int nuevoNum;
-    cin >> nuevoNum;
-    Insertar(a,nuevoNum);
+    if (Borrar(a,dat) == TRUE){ // se elimina
+        cout << "Ingrese numero por el cual reemplazar: ";
+        int nuevoNum;
+        cin >> nuevoNum;
+        Insertar(a,nuevoNum);
+    } else { // no se encuentra porque borrar devolvio falso
+        cout << "No se puede reemplazar porque no existe\n";
+    }
 };
 
 void Equilibrar(Arbol* a, pNodo nodo, int rama, int nuevo) {
