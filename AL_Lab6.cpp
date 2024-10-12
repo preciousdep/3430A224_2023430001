@@ -40,7 +40,10 @@ void imprimir_vector_entero(int *vector, int n) {
 }
 
 void imprimir_matriz(int** matriz, int n) {
-    cout << "   0   |   1   |   2   |   3   |   4   \n";
+    for (int i = 0; i<n; i++){
+        cout << "    " << i << "   ";
+    }
+    cout << endl;
     for (int i = 0; i < n; i++) {
         cout << i;
         for (int j = 0; j < n; j++) {
@@ -71,7 +74,7 @@ void imprimir_grafo(int **matriz, char *vector, int n) {
     fp.close();
 
     system("dot -Tpng -ografo.png grafo.txt");
-    system("Start grafo.png &");
+    system("Start grafo.png &"); // windows 
 }
 
 int calcular_minimo(int dw, int dv, int mvw) {
@@ -81,12 +84,12 @@ int calcular_minimo(int dw, int dv, int mvw) {
     } else {
         min = (dv != -1 && mvw != -1 && dw > (dv + mvw)) ? (dv + mvw) : dw;
     }
-    cout << "dw: " << dw << " dv: " << dv << " mvw: " << mvw << " min: " << min << endl;
+    //cout << "dw: " << dw << " dv: " << dv << " mvw: " << mvw << " min: " << min << endl;
     return min;
 }
 
 void actualizar_pesos (int *D, char *VS, int **M, char *V, char v, int n) {
-    cout << "\n> actualiza pesos en D[]" << endl;
+    //cout << "\n> actualiza pesos en D[]" << endl;
     int indice_v = buscar_indice_caracter(V, v,n);
     for (int i = 0; VS[i] != ' '; i++) {
         if (VS[i] != v) {
@@ -120,7 +123,7 @@ int elegir_vertice(char* VS, int* D, char* V, int n) {
             vertice = VS[i];
         }
     }
-    cout << "\nvertice: " << vertice << endl << endl;
+    //cout << "\nvertice: " << vertice << endl << endl;
     return vertice;
 }
 
@@ -150,6 +153,10 @@ void inicializar_matriz_enteros (int** matriz, int n) {
                 cout << "Ingrese peso de conexion entre " <<
                 fila << " y " << col << ":";
                 cin >> matriz[fila][col];
+                if (matriz[fila][col] == 0 || matriz[fila][col] < 0){
+                    // elimina la conexion para evitar errores
+                    matriz[fila][col] = -1;
+                }
             }
         }
         cout << endl;
@@ -187,48 +194,43 @@ void aplicar_dijkstra (char* V, char* S, char* VS, int* D, int** M, int n) {
     cout << "---------Estados iniciales ---------------------------------------" << endl;
     imprimir_matriz(M,n);
     cout << endl;
-    imprimir_vector_caracter(S, 'S',n);
-    imprimir_vector_caracter(VS, 'V',n);
-    imprimir_vector_entero(D,n);
+    //imprimir_vector_caracter(S, 'S',n);
+    //imprimir_vector_caracter(VS, 'V',n);
+    //imprimir_vector_entero(D,n);
     cout << "------------------------------------------------------------------" << endl << endl;
     
-    cout << "> agrega primer valor V[0] a S[] y actualiza VS[]" << endl << endl;
+    //cout << "> agrega primer valor V[0] a S[] y actualiza VS[]" << endl << endl;
     agrega_vertice_a_S(S, V[0],n);
-    imprimir_vector_caracter(S, 'S',n);
+    //imprimir_vector_caracter(S, 'S',n);
     actualizar_VS(V, S, VS,n);
-    imprimir_vector_caracter(VS, 'V',n);
-    imprimir_vector_entero(D,n);
+    //imprimir_vector_caracter(VS, 'V',n);
+    //imprimir_vector_entero(D,n);
 
     for (int i = 1; i < n; i++) {
-        cout << "\n> elige vertice menor en VS[] según valores en D[]" << endl;
-        cout << "> lo agrega a S[] y actualiza VS[]" << endl;
+        //cout << "\n> elige vertice menor en VS[] según valores en D[]" << endl;
+        //cout << "> lo agrega a S[] y actualiza VS[]" << endl;
         int v = elegir_vertice(VS, D, V,n);
 
         agrega_vertice_a_S(S, v,n);
-        imprimir_vector_caracter(S, 'S',n);
+        //imprimir_vector_caracter(S, 'S',n);
 
         actualizar_VS(V, S, VS,n);
-        imprimir_vector_caracter(VS, 'V',n);
+        //imprimir_vector_caracter(VS, 'V',n);
 
         actualizar_pesos(D, VS, M, V, v,n);
-        imprimir_vector_entero(D,n);
+        //imprimir_vector_entero(D,n);
     }
 }
 
 
-
+// funciones ordenadas de forma que se pueda utilizar 'n' como tamaño no constante
+// warnings presentes debido a que no es un valor constante, programa funciona
+// sin problema respecto a esto
 int main(int argc, char **argv) {
     int const n = atoi(argv[1]);
     // pide valor constante
     char V[n], S[n], VS[n];
     int D[n];
-
-    // valores de prueba1.
-    /*int M[N][N] = {{ 0, 4, 11, -1, -1},
-                   {-1, 0, -1,  6,  2},
-                   {-1 ,3,  0,  6, -1},
-                   {-1,-1, -1,  0, -1},
-                   {-1,-1,  5,  3,  0}};*/
 
     // inicializa matriz de n arreglos de n tamaño
     int **M;
