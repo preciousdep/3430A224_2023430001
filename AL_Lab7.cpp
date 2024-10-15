@@ -2,18 +2,11 @@
 #include <iostream>
 using namespace std;
 
-/* inicializa un vector. recibe el vector como un puntero.
-void inicializar_vector_caracter (char *vector, int n) {
-    int col;
-    // recorre el vector.
-    for (col=0; col<n; col++) {
-        vector[col] = '';
-    }
-}*/
-
 // imprime un vector. recibe el vector como un puntero.
 void imprimir_vector_caracter(char *vector, int n) {
+
     cout << endl;
+    char alfabeto;
     for (int i=0; i<n; i++) {
         cout << "vector[" << i << "]: " << vector[i] << " ";
     }
@@ -22,10 +15,15 @@ void imprimir_vector_caracter(char *vector, int n) {
 
 // imprime matriz.
 void imprimir_matriz(int **matriz, int n) {
+    for (int i = 0; i<n; i++){
+        cout << "    " << i << "   ";
+    }
     cout << endl;
-    for (int fila=0; fila<n; fila++) {
-        for (int col=0; col<n; col++) {
-            cout << matriz[fila][col] << " ";
+    for (int i = 0; i < n; i++) {
+        cout << i;
+        for (int j = 0; j < n; j++) {
+            //cout << "matriz[" << i << "," << j << "]: " << matriz[i][j] << " ";
+            cout << "   " << matriz[i][j] << "   ";
         }
         cout << endl;
     }
@@ -35,7 +33,7 @@ void imprimir_matriz(int **matriz, int n) {
 void inicializar_matriz_enteros (int** matriz, int n) {
     for (int fila=0; fila<n; fila++) {
         for (int col=0; col<n; col++) {
-            matriz[fila][col] = 0 ;
+            matriz[fila][col] = -1 ;
         }
     }
     imprimir_matriz(matriz,n);
@@ -45,7 +43,7 @@ void inicializar_matriz_enteros (int** matriz, int n) {
         for (int col = 0; col < n; col++){
             if (fila == col){
                 matriz[fila][col]=0;
-            } else {
+            } else if (fila < col) { // de esta forma solo se llena [0][1] y no [1][0]
                 cout << "Ingrese peso de conexion entre " <<
                 fila << " y " << col << ":";
                 cin >> matriz[fila][col];
@@ -53,8 +51,6 @@ void inicializar_matriz_enteros (int** matriz, int n) {
                     // elimina la conexion para evitar errores
                     matriz[fila][col] = -1;
                 }
-                // no se tngo que pensar mejor la logica
-                matriz[col][fila] = matriz[fila][col];
 
             }
         }
@@ -62,8 +58,29 @@ void inicializar_matriz_enteros (int** matriz, int n) {
     }
 }
 
-void prim(int** matriz, int n, char* vector){
+void menorCosto(int** matriz, int n){
+    // definir menor (indice)
+    // definir menor costo
+    // pasar por cada columna o fila ACLARAR
+    // comparar si costo < menor costo
+    // si se cumple definir menor indice
+    // actualizar menor costo
 
+    // retornar menor indice y menor costo
+}
+
+void prim(int** matriz, int n, char* vector){
+    // inicializar V con vector
+    // inicializar U vacio
+    // inicializar L vacio
+    
+    for (int i = 1; i<n; i++){
+        // escoger menor arista (u,v) (funcion menorCosto)
+
+        // que v aun pertenezca a U
+        // agregar (u,v) a L
+        // agregar v a U
+    }
 }
 
 //
@@ -77,18 +94,23 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    //inicializa un arreglo alfabetico de n elementos
+    char letters[27];
+    for (int i = 0; i < 27; ++i) {
+        letters[i] = 'A' + i; 
+    }
+
     // convierte string a entero.
     n = atoi(argv[1]);
 
     char vector[40];
-
     // inicializa e imprime vectores.
-        int col;
+    int col;
     // recorre el vector.
     for (col=0; col<n; col++) {
-        vector[col] = ' ';
+        vector[col] = letters[col];
     }
-    cout << "CONTROL";
+
     imprimir_vector_caracter(vector, n);
 
     // crea matriz nxn de enteros.
