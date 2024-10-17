@@ -11,6 +11,24 @@ struct MST{ // arbol ya ordenado
     int pesos[27]; // los pesos de cada arista van aca
     string aristas[27]; // aristas en forma de a->b van aca
     char claves[27]; // aca van las claves
+    
+    void imprimirMST(int* pesos, string* aristas, int n){
+        cout << "Creando MST \n";
+        ofstream fp("mst.txt");
+        fp << "graph G {" << endl;
+        fp << "graph [rankdir=LR]" << endl;
+        fp << "node [style=filled fillcolor=green];" << endl;
+
+        for (int i = 0; i<n;i++){
+            fp << aristas[i] << " [label=" << pesos[i] << "];" << endl;
+        }
+
+        fp << "}" << endl;
+        fp.close();
+
+    system("dot -Tpng -omst.png mst.txt");
+    system("Start mst.png &"); // windows 
+    }
 };
 
 // pa despues
@@ -18,14 +36,14 @@ void imprimir_grafo(int **matriz, char *vector, int n) {
 
     cout << "Creando grafo \n";
     ofstream fp("grafo.txt");
-    fp << "digraph G {" << endl;
+    fp << "graph G {" << endl;
     fp << "graph [rankdir=LR]" << endl;
-    fp << "node [style=filled fillcolor=yellow];" << endl;
+    fp << "node [style=filled fillcolor=green];" << endl;
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if (i != j && matriz[i][j] > 0) {
-                fp << vector[i] << "->" << vector[j] << " [label=" << matriz[i][j] << "];" << endl;
+            if (i != j && i<j && matriz[i][j] > 0) {
+                fp << vector[i] << "--" << vector[j] << " [label=" << matriz[i][j] << "];" << endl;
             } 
         }
     }
@@ -103,23 +121,8 @@ bool isIn(char carac1, char* vector2, int n){
     return false;
 };
 
-// si esta completo el arbol, termina el ciclo de prim
-bool finishedTree(char vect1[27], char *vect2, int n){
-    bool finished = false;
-    for (int i=0; i<n; i++){
-        if (isIn(vect1[i], vect2,n)){
-            finished = true;
-        }
-    }
-    if (finished){
-        return true;
-    } else {
-        return false;
-    }
-}
-
 // encuentra el arista de menor costo para ese nodo (vector fila)
-int menorCosto(int vector[27], int n, int weight){ // DRAFT
+int menorCosto(int vector[27], int n, int &weight){ // DRAFT
     int menorIndice=0; // el indice del menor arista
     weight = 10;
     for (int i = 0; i<n; i++){
@@ -135,15 +138,18 @@ int menorCosto(int vector[27], int n, int weight){ // DRAFT
 
 // algoritmo de prim draft
 void prim(int** matriz, int n, char* vector){
+
+    bool alcanzado[27] = {false};
+
     // inicializar V con vector
     int counter = 0;
-    int weight=100;
+    int weight = 100;
     MST mst;
     mst.claves[0] = vector[0];
+    alcanzado[0] = true;
     int i = 0;
 
-    while (counter <= n){ // hago vector de la columna
-        char Q = vector[i];
+    while (counter < n){ // hago vector de la columna
         int vecQ[27];
         for (int j= 0 ; j<n; j++){
             vecQ[j] = matriz[i][j];
@@ -151,36 +157,47 @@ void prim(int** matriz, int n, char* vector){
 
         int indiceMenor = menorCosto(vecQ,n,weight);
 
-        mst.aristas[counter] = vector[i]+ "->"+vector[indiceMenor];
-        mst.claves[counter] = vector[i];
-        mst.pesos[counter] = matriz[i][indiceMenor];
-        cout << "- " << mst.aristas[counter] << " - " << mst.claves[counter] << " - " << mst.pesos[counter] << endl;
         
-        while (isIn(vector[indiceMenor],mst.claves,n)){
-            int pesosTemp[27];
-            for (int j=0; j<n; j++){
-                pesosTemp[j] = vecQ[j];
-            };
+        if (!alcanzado[indiceMenor]){
+            mst.aristas[counter] = string(1,vector[i]) + "--" + string(1,vector[indiceMenor]);
+            mst.claves[counter] = vector[i];
+            mst.pesos[counter] = weight;
+            
+            alcanzado[indiceMenor] = true;
+            cout << mst.claves[counter] << " --" << mst.aristas[counter] << " - " << mst.pesos[counter] << endl;
+        } else {
+            int internoCounter= 0;
+            while (alcanzado[indiceMenor]){
+                cout << "Ya existe: " << vector[indiceMenor] << endl;
+                /*int pesosTemp[27];
+                for (int j=0; j<n; j++){
+                    pesosTemp[j] = vecQ[j];
+                };*/
+                vecQ[indiceMenor] = -1;
+                indiceMenor = menorCosto(vecQ,n,weight);
 
-            pesosTemp[indiceMenor] = -1;
-            menorCosto(pesosTemp,n,weight);
-
-            if (finishedTree(vector,mst.claves,n)){
-                break;
+                cout << "Se toma " << vector[indiceMenor] << endl;
+                internoCounter++;
+                if (internoCounter == n){
+                    break;
+                }
             }
-        }
 
+            mst.aristas[counter] = string(1,vector[i]) + "--" + string(1,vector[indiceMenor]);
+            mst.claves[counter] = vector[i];
+            mst.pesos[counter] = weight;
+            alcanzado[indiceMenor] = true;
+            cout << mst.claves[counter] << " -- " << mst.aristas[counter] << " - " << mst.pesos[counter] << endl;
+        }
+        
+        
         i = indiceMenor;
         counter++;
-
-        // como hacer los k faltan? salir del bucle digo yo
 
     }
 
     imprimir_vector_caracter(mst.claves, n);
-    /*for (int i=0; i<n; i++){
-        cout << "- " << mst.pesos[i] << " ! ! ! \n";
-    }*/
+    mst.imprimirMST(mst.pesos, mst.aristas,n);
 }
 
 //
@@ -233,6 +250,8 @@ int main(int argc, char **argv) {
     
     inicializar_matriz_enteros(matriz, n);
     imprimir_matriz(matriz, vector, n);
+    imprimir_grafo(matriz,vector,n);
 
     prim(matriz,n,vector);
+    
 }
