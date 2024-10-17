@@ -2,10 +2,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include <string>
-
 using namespace std;
-#define TRUE 1;
-#define FALSE 0;
 
 struct MST{ // arbol ya ordenado
     int pesos[27]; // los pesos de cada arista van aca
@@ -19,7 +16,7 @@ struct MST{ // arbol ya ordenado
         fp << "graph [rankdir=LR]" << endl;
         fp << "node [style=filled fillcolor=green];" << endl;
 
-        for (int i = 0; i<n;i++){
+        for (int i = 0; i<n-1;i++){
             fp << aristas[i] << " [label=" << pesos[i] << "];" << endl;
         }
 
@@ -143,7 +140,7 @@ void prim(int** matriz, int n, char* vector){
 
     // inicializar V con vector
     int counter = 0;
-    int weight = 100;
+    int weight = 10;
     MST mst;
     mst.claves[0] = vector[0];
     alcanzado[0] = true;
@@ -156,29 +153,25 @@ void prim(int** matriz, int n, char* vector){
         }
 
         int indiceMenor = menorCosto(vecQ,n,weight);
-
-        
+    
         if (!alcanzado[indiceMenor]){
             mst.aristas[counter] = string(1,vector[i]) + "--" + string(1,vector[indiceMenor]);
             mst.claves[counter] = vector[i];
             mst.pesos[counter] = weight;
             
             alcanzado[indiceMenor] = true;
-            cout << mst.claves[counter] << " --" << mst.aristas[counter] << " - " << mst.pesos[counter] << endl;
+            cout << mst.claves[counter] << "--" << mst.aristas[counter] << " - " << mst.pesos[counter] << endl;
         } else {
             int internoCounter= 0;
             while (alcanzado[indiceMenor]){
                 cout << "Ya existe: " << vector[indiceMenor] << endl;
-                /*int pesosTemp[27];
-                for (int j=0; j<n; j++){
-                    pesosTemp[j] = vecQ[j];
-                };*/
+
                 vecQ[indiceMenor] = -1;
                 indiceMenor = menorCosto(vecQ,n,weight);
 
                 cout << "Se toma " << vector[indiceMenor] << endl;
                 internoCounter++;
-                if (internoCounter == n){
+                if (internoCounter == n || !alcanzado[indiceMenor]){
                     break;
                 }
             }
@@ -190,11 +183,11 @@ void prim(int** matriz, int n, char* vector){
             cout << mst.claves[counter] << " -- " << mst.aristas[counter] << " - " << mst.pesos[counter] << endl;
         }
         
-        
         i = indiceMenor;
         counter++;
 
     }
+    cout << "Menor camino encontrado . . . \n";
 
     imprimir_vector_caracter(mst.claves, n);
     mst.imprimirMST(mst.pesos, mst.aristas,n);
