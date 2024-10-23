@@ -77,6 +77,21 @@ void mostrarArreglo(int* arr, int size) {
     cout << endl;
 }
 
+int validarIn(){
+    int a;
+    while(1){
+        cin>>a;
+        if(cin.fail()){
+            cin.clear();
+            cout<<"Valor no valido"<<endl;
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        } else if(!cin.fail()){
+            break;
+            }
+    }
+    return a;
+}
+
 int main(){
     const int SIZE_tmp = 10000 ;
     int arr[SIZE_tmp];
@@ -84,7 +99,7 @@ int main(){
 
     int SIZE;
     cout << "Ingrese tamano de su arreglo: ";
-    cin >> SIZE;
+    SIZE = validarIn();
     
     // ---- para el selection sort
     cout << "Generando arreglo 1 ...\n";
@@ -100,9 +115,9 @@ int main(){
     auto start = std::chrono::high_resolution_clock::now();
     selectionSort(arr,SIZE);    
     auto end=std::chrono::high_resolution_clock::now();
-    mostrarArreglo(arr,SIZE);
     std::chrono::duration<double> duration = (end - start)*1000;
     cout << " * SELECTION SORT * \n";
+    mostrarArreglo(arr,SIZE);
     cout << "Tiempo de ejecucion: " << duration.count() << " milisegundos " << endl;
 
     // ------------- arreglo 2 con quicksort
@@ -111,9 +126,9 @@ int main(){
     auto start2 = std::chrono::high_resolution_clock::now();
     quickSort(arr2,0,SIZE);
     auto end2=std::chrono::high_resolution_clock::now();
-    mostrarArreglo(arr2,SIZE);
     std::chrono::duration<double> duration2 = (end2 - start2)*1000;
     cout << " * QUICK SORT * \n";
+    mostrarArreglo(arr2,SIZE);
     cout << "Tiempo de ejecucion: " << duration2.count() << " milisegundos " << endl;
 
 }
