@@ -2,7 +2,40 @@
 #include <cstdlib>
 using namespace std;
 
-// buscar implementando el hash
+struct nodo{
+    int info;
+    nodo* next;
+};
+
+void encadenamiento(nodo* keyarr, int valor, int key, int size){
+    nodo* q = new nodo;
+    q = keyarr[key].next;
+    while (q->info != -5 && q->info != valor){
+        q = q-> next;
+    }
+    // agregarlo ? ns como
+}
+
+void colisionDobleHash(int* keyarr, int valor, int key, int size){
+    int dx = ((key+1) % size); // formula distinta del doble hash
+    cout << "CLAVE INICIAL: " << key << " + 1 % "<< size << endl;
+        while (keyarr[dx] != -5 && keyarr[dx] != valor && dx!=key){
+        if (dx == size || dx == size+1){
+            dx = 0;
+        } else {
+            cout << "CLAVE: " << dx << " + 1 % " << size << endl;
+            dx = ((dx+1)%size);
+            cout << " = " << dx << endl;
+        }
+    }
+    keyarr[dx] = valor;
+
+}
+
+void colisionCuadratica(int* keyarr, int valor, int key, int size){
+    //pendiente pq pseudocodigo esta curiosito
+
+}
 
 // colision lineal, recorre el arreglo de forma circular hasta que
 // encuentra un sitio adecuado
@@ -21,11 +54,21 @@ void colisionLineal(int* keyarr, int valor, int key, int size){
 // aqui se evalua si el sitio keyarr[key] esta vacio (=-5) o
 // ya contiene algo. desde ahi se agrega o se trata la colision
 bool colision(int* keyarr, int valor, int key, int size){
+
     if (keyarr[key] == -5){
-        keyarr[key] = valor;
+        return true;
     } else { // colision
         cout << "Se ha encontrado una colision \n";
-        colisionLineal(keyarr,valor,key,size);
+        return false;
+    }
+}
+
+bool colisionEnc(nodo* keyarr, int valor, int key, int size){
+    if (keyarr[key].info == -5){
+        return true;
+    } else { // colision
+        cout << "Se ha encontrado una colision \n";
+        return false;
     }
 }
 
@@ -59,6 +102,7 @@ void llenarArreglo(int* arr, int size) {
     }
 }
 
+
 void arregloNULL(int* arr, int size) {
     for (int i = 0; i < size; ++i) {
         arr[i] = -5;
@@ -73,11 +117,23 @@ void mostrarArreglo(int* arr, int size) {
     cout << endl;
 }
 
+nodo* crearArregloNodos(int size){
+    nodo* arrnodo[99];
+    for (int i = 0; i<size;i++){
+        arrnodo[i]->info = -5;
+    }
+
+    return *arrnodo;
+}
+
 int main(int argc,char **argv) {
 
     if (argc < 2){
         return -1;
     }
+
+    char argumento;
+    cin >> argumento;
 
     cout << "Ingrese tamano de arreglo\n";
     int size = validarIn();
@@ -90,12 +146,38 @@ int main(int argc,char **argv) {
     mostrarArreglo(arr,size);
 
     // recorre arreglo para asignar keys
-    for (int i=0; i<size; i++){
-        // asigna una key inicial
-        int key = hashKey(arr[i],size);
-        cout << arr[i] <<" CLAVE: " << key << endl; 
-        // aqui se dirige a colision con la key
-        colision(keyarr,arr[i],key,size);
+    if (argumento == 'E'){ // caso distinto para encadenamiento
+        nodo* arrnodo = crearArregloNodos(size);
+        for (int i= 0; i<size;i++){
+            int key = hashKey(arr[i],size);
+            cout << arr[i] <<" CLAVE: " << key << endl; 
+            if (colisionEnc(arrnodo,arr[i],key,size)){
+                arrnodo->info = arr[i];
+            } else {
+                
+            }
+        }
+
+    } else {
+        for (int i=0; i<size; i++){
+            // asigna una key inicial
+            int key = hashKey(arr[i],size);
+            cout << arr[i] <<" CLAVE: " << key << endl; 
+            // aqui se dirige a colision con la key
+            if (colision(keyarr,arr[i],key,size)){
+                keyarr[key] = arr[i];
+            } else { // manejo de colisiones
+                if (argumento == 'L'){
+                    colisionLineal(keyarr,arr[i],key,size);
+
+                } else if (argumento == 'C'){
+                    colisionCuadratica(keyarr,arr[i],key,size);
+
+                } else if (argumento == 'D'){
+                    colisionDobleHash(keyarr,arr[i],key,size);
+                }
+            };
+        }
         mostrarArreglo(keyarr,size);
     }
 }
