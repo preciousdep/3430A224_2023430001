@@ -2,19 +2,6 @@
 #include <cstdlib>
 using namespace std;
 
-struct nodo{
-    int info;
-    nodo* next;
-};
-
-void encadenamiento(nodo* keyarr, int valor, int key, int size){
-    nodo* q = new nodo;
-    q = keyarr[key].next;
-    while (q->info != -5 && q->info != valor){
-        q = q-> next;
-    }
-    // agregarlo ? ns como
-}
 
 void colisionDobleHash(int* keyarr, int valor, int key, int size){
     int dx = ((key+1) % size); // formula distinta del doble hash
@@ -33,7 +20,21 @@ void colisionDobleHash(int* keyarr, int valor, int key, int size){
 }
 
 void colisionCuadratica(int* keyarr, int valor, int key, int size){
-    //pendiente pq pseudocodigo esta curiosito
+    int i = 1;
+    int dx = (key + (i*i)) % size;
+    while (keyarr[key] != -5 && dx != key) {
+        i++;
+        dx = (key + (i*i)) % size;
+
+        if (dx > size){
+            i = 0;
+            dx = 1;
+            key = 1;
+        }
+    }
+    if (keyarr[key]== -5){
+        keyarr[dx] = valor;
+    }
 
 }
 
@@ -63,14 +64,6 @@ bool colision(int* keyarr, int valor, int key, int size){
     }
 }
 
-bool colisionEnc(nodo* keyarr, int valor, int key, int size){
-    if (keyarr[key].info == -5){
-        return true;
-    } else { // colision
-        cout << "Se ha encontrado una colision \n";
-        return false;
-    }
-}
 
 //funcion hash
 int hashKey(int valor, int size){
@@ -117,14 +110,7 @@ void mostrarArreglo(int* arr, int size) {
     cout << endl;
 }
 
-nodo* crearArregloNodos(int size){
-    nodo* arrnodo[99];
-    for (int i = 0; i<size;i++){
-        arrnodo[i]->info = -5;
-    }
 
-    return *arrnodo;
-}
 
 int main(int argc,char **argv) {
 
@@ -146,19 +132,6 @@ int main(int argc,char **argv) {
     mostrarArreglo(arr,size);
 
     // recorre arreglo para asignar keys
-    if (argumento == 'E'){ // caso distinto para encadenamiento
-        nodo* arrnodo = crearArregloNodos(size);
-        for (int i= 0; i<size;i++){
-            int key = hashKey(arr[i],size);
-            cout << arr[i] <<" CLAVE: " << key << endl; 
-            if (colisionEnc(arrnodo,arr[i],key,size)){
-                arrnodo->info = arr[i];
-            } else {
-                
-            }
-        }
-
-    } else {
         for (int i=0; i<size; i++){
             // asigna una key inicial
             int key = hashKey(arr[i],size);
@@ -180,4 +153,3 @@ int main(int argc,char **argv) {
         }
         mostrarArreglo(keyarr,size);
     }
-}
