@@ -2,9 +2,8 @@
 #include <cstdlib>
 using namespace std;
 
-
-void colisionDobleHash(int* keyarr, int valor, int key, int size){
-    int dx = ((key+1) % size); // formula distinta del doble hash
+void colisionDobleHash(int* keyarr, int valor, int key, int size, int &dx){
+    dx = ((key+1) % size); // formula distinta del doble hash
     cout << "CLAVE INICIAL: " << key << " + 1 % "<< size << endl;
         while (keyarr[dx] != -5 && keyarr[dx] != valor && dx!=key){
         if (dx == size || dx == size+1){
@@ -15,41 +14,75 @@ void colisionDobleHash(int* keyarr, int valor, int key, int size){
             cout << " = " << dx << endl;
         }
     }
-    keyarr[dx] = valor;
+        if (keyarr[dx]==valor){
+        cout << "Valor encontrado\n";
+    } else if (keyarr[dx]==-5){
+        cout << "Se agrega " << valor << " en " << dx << endl;
+        keyarr[dx] = valor;
+    } else {
+        cout << "Ha ocurrido un error...\n";
+    }
 
 }
 
-void colisionCuadratica(int* keyarr, int valor, int key, int size){
+void colisionCuadratica(int* keyarr, int valor, int key, int size, int &dx){
+    /* se modificaron ciertos detalles en comparacion
+    al pseudocodigo porque siempre habian errores en caso
+    de que la clave donde hay colision es = 0, tambien
+    cuando los numeros se mantenian haciendo bucle seguido,
+    asignando los mismos numeros debajo de size */
     int i = 1;
-    int dx = (key + (i*i)) % size;
-    while (keyarr[key] != -5 && dx != key) {
-        i++;
-        dx = (key + (i*i)) % size;
-
-        if (dx > size){
-            i = 0;
-            dx = 1;
-            key = 1;
-        }
+    dx = (key + (i*i));
+    if (dx > size){
+        dx = dx - size;
+        // esto para la primera asignacion, asegurarse
+        // que no sobrepase el limite
     }
-    if (keyarr[key]== -5){
+    while (keyarr[dx] != -5 && keyarr[dx] != valor) {
+        dx = (dx + (i*i));
+
+        if (dx >= size){ // en caso que dx se pase del limite
+        // se reasigna con modulo sin modificar i o key
+        // ya que ahi existiria un bucle infinito
+            cout << "SE REASIGNAN\n";
+            dx = dx%size;
+        } 
+
+        cout << "CONTROL" << dx << endl;
+        cout << "dx : " << dx << "\n i : " << i << "\n";
+        i++;
+    }
+    if (keyarr[dx]==valor){
+        cout << "Valor encontrado\n";
+    } else if (keyarr[dx]==-5){
+        cout << "Se agrega " << valor << " en " << dx << endl;
         keyarr[dx] = valor;
+    } else {
+        cout << "Ha ocurrido un error...\n";
     }
 
 }
 
 // colision lineal, recorre el arreglo de forma circular hasta que
 // encuentra un sitio adecuado
-void colisionLineal(int* keyarr, int valor, int key, int size){
-    int i = key + 1;
-    while (keyarr[i] != -5 && keyarr[i] != valor && i!=key){
-        if (i == size || i == size+1){
-            i = 0;
+void colisionLineal(int* keyarr, int valor, int key, int size, int &dx){
+    dx = key + 1;
+    while (keyarr[dx] != -5 && keyarr[dx] != valor && dx!=key){
+        cout << "Se intenta en la posicion " << dx << endl;
+        if (dx == size || dx == size+1){
+            dx = 0;
         } else {
-            i ++;
+            dx ++;
         }
     }
-    keyarr[i] = valor;
+    if (keyarr[dx]==valor){
+        cout << "Valor encontrado\n";
+    } else if (keyarr[dx]==-5){
+        cout << "Se agrega " << valor << " en " << dx << endl;
+        keyarr[dx] = valor;
+    } else {
+        cout << "Ha ocurrido un error...\n";
+    }
 }
 
 // aqui se evalua si el sitio keyarr[key] esta vacio (=-5) o
@@ -86,6 +119,31 @@ int validarIn(){
             }
     }
     return a;
+}
+
+void buscar(int* keyarr, int valor, int size, char argumento){
+    int dx;
+
+    int key = hashKey(valor,size);
+    if (valor != keyarr[key]){
+        cout << "Este valor fue asignado por colision, buscando...\n";
+        if (argumento == 'L'){
+            colisionLineal(keyarr,valor,key,size,dx);
+            cout << "Por reasignacion Lineal fue asignado en posicion " <<
+            dx << "\n";
+        } else if (argumento == 'C'){
+            colisionCuadratica(keyarr,valor,key,size,dx);
+            cout << "Por reasignacion Cuadratica fue asignado en posicion " <<
+            dx << "\n";
+        } else if (argumento == 'D'){
+            colisionDobleHash(keyarr,valor,key,size,dx);
+            cout << "Por reasignacion Cuadratica fue asignado en posicion " <<
+            dx << "\n";
+
+        }
+    } else if (valor == keyarr[key]){
+        cout << "El valor fue asignado en la posicion " << key << endl;
+    }
 }
 
 void llenarArreglo(int* arr, int size) {
@@ -126,6 +184,7 @@ int main(int argc,char **argv) {
     // 99 maximo
     int arr[99];
     int keyarr[99];
+    int dx;
     
     arregloNULL(keyarr,size);
     llenarArreglo(arr,size);
@@ -141,15 +200,19 @@ int main(int argc,char **argv) {
                 keyarr[key] = arr[i];
             } else { // manejo de colisiones
                 if (argumento == 'L'){
-                    colisionLineal(keyarr,arr[i],key,size);
+                    colisionLineal(keyarr,arr[i],key,size, dx);
 
                 } else if (argumento == 'C'){
-                    colisionCuadratica(keyarr,arr[i],key,size);
+                    colisionCuadratica(keyarr,arr[i],key,size,dx);
 
                 } else if (argumento == 'D'){
-                    colisionDobleHash(keyarr,arr[i],key,size);
+                    colisionDobleHash(keyarr,arr[i],key,size,dx);
                 }
             };
         }
         mostrarArreglo(keyarr,size);
+
+        cout << "Arreglo ordenado \nEscoja el valor que desea buscar...\n";
+        int busqueda = validarIn();
+        buscar(keyarr,busqueda,size,argumento);
     }
