@@ -1,16 +1,18 @@
 #include <iostream>
 #include <cstdlib>
+#include <cctype>
 using namespace std;
 
 void colisionDobleHash(int* keyarr, int valor, int key, int size, int &dx){
     dx = ((key+1) % size); // formula distinta del doble hash
+    // se aplica hasta que no existan colisiones
     cout << "CLAVE INICIAL: " << key << " + 1 % "<< size << endl;
         while (keyarr[dx] != -5 && keyarr[dx] != valor && dx!=key){
         if (dx == size || dx == size+1){
             dx = 0;
         } else {
             cout << "CLAVE: " << dx << " + 1 % " << size << endl;
-            dx = ((dx+1)%size);
+            dx = ((dx+1)%size); // %size para que no se pase del tamano del arreglo
             cout << " = " << dx << endl;
         }
     }
@@ -87,6 +89,7 @@ void colisionLineal(int* keyarr, int valor, int key, int size, int &dx){
 
 // aqui se evalua si el sitio keyarr[key] esta vacio (=-5) o
 // ya contiene algo. desde ahi se agrega o se trata la colision
+// devolviendo true o false
 bool colision(int* keyarr, int valor, int key, int size){
 
     if (keyarr[key] == -5){
@@ -98,7 +101,7 @@ bool colision(int* keyarr, int valor, int key, int size){
 }
 
 
-//funcion hash
+//funcion hash con modulo
 int hashKey(int valor, int size){
     // hash por modulo
     int key;
@@ -125,7 +128,7 @@ void buscar(int* keyarr, int valor, int size, char argumento){
     int dx;
 
     int key = hashKey(valor,size);
-    if (valor != keyarr[key]){
+    if (valor != keyarr[key]){ // se reconoce si fue por colision y se usan los metodos para buscar con dx
         cout << "Este valor fue asignado por colision, buscando...\n";
         if (argumento == 'L'){
             colisionLineal(keyarr,valor,key,size,dx);
@@ -141,7 +144,7 @@ void buscar(int* keyarr, int valor, int size, char argumento){
             dx << "\n";
 
         }
-    } else if (valor == keyarr[key]){
+    } else if (valor == keyarr[key]){ // si no existio colision, se encuentra valor
         cout << "El valor fue asignado en la posicion " << key << endl;
     }
 }
@@ -169,7 +172,6 @@ void mostrarArreglo(int* arr, int size) {
 }
 
 
-
 int main(int argc,char **argv) {
 
     if (argc < 2){
@@ -177,16 +179,22 @@ int main(int argc,char **argv) {
     }
 
     char argumento;
-    cin >> argumento;
+    argumento = toupper(argv[1][0]);
+    // comprobar que el argumento sea valido 
+    while (argumento != 'L' && argumento != 'C' && argumento != 'D'){
+        cout << "Opcion no valida. Escoja L, C o D\n";
+        cin >> argumento;
+        argumento = toupper(argumento);
+    }
 
     cout << "Ingrese tamano de arreglo\n";
     int size = validarIn();
     // 99 maximo
     int arr[99];
     int keyarr[99];
-    int dx;
+    int dx; // este se usara para las busquedas
     
-    arregloNULL(keyarr,size);
+    //arregloNULL(keyarr,size); 
     llenarArreglo(arr,size);
     mostrarArreglo(arr,size);
 
@@ -207,12 +215,12 @@ int main(int argc,char **argv) {
 
                 } else if (argumento == 'D'){
                     colisionDobleHash(keyarr,arr[i],key,size,dx);
-                }
+                } // encadenamiento debe ser distinta al usar clases
             };
         }
         mostrarArreglo(keyarr,size);
 
         cout << "Arreglo ordenado \nEscoja el valor que desea buscar...\n";
-        int busqueda = validarIn();
+        int busqueda = validarIn(); // busqueda
         buscar(keyarr,busqueda,size,argumento);
     }
